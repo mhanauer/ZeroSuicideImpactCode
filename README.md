@@ -59,7 +59,6 @@ ITSTest$MonthNum = substr(ITSTest$MonthNum, start = 1, stop= 3)
 ITSTest$Year = gsub("\\D", "", ITSTest$Month)
 
 ITSTest$Year = as.numeric(ITSTest$Year)
-ITSTest
 ITSTest$Month = NULL
 head(ITSTest)
 
@@ -435,15 +434,19 @@ head(ITSRolling)
 ITSRolling$Time= 1:dim(ITSRolling)[1]
 dim(ITSRolling)
 head(ITSRolling)
-ITSRolling
+dim(ITSRolling)
 ITSRolling[144:145,]
 
-Intervention= c(rep(0,144), rep(1,195-144))
+
+Intervention = c(rep(0, 144), rep(1, 168-144), rep(2, 172-168), rep(3, 195-172))
 length(Intervention)
 
 ITSRolling$Intervention = Intervention
 head(ITSRolling)
 ITSRolling[144:145,]
+ITSRolling[144:169,]
+ITSRolling[169:175,]
+
 
 
 ### Changing the month names to numbers so we can plot
@@ -472,7 +475,20 @@ summary(trend_station)
 interaction.plot(x.factor = ITSRolling$Time, trace.factor = ITSRolling$Intervention, response = ITSRolling$RollingSumTN)
 
 compmeans(ITSRolling$RollingSumTN, ITSRolling$Intervention) 
+
+(15-23)/23
+(12-23)/23
 ```
+Ok try differences between
+```{r}
+
+
+
+```
+
+
+
+
 Model 5: CRI's rolling sum
 ```{r}
 library(jtools)
