@@ -122,7 +122,6 @@ compmeans(ITSTest$Suicides, ITSTest$Intervention)
 We want to subset the data so we can get the differences that we want
 0 versus 1 and 0 versus 3
 
-
 Model: Count
 ```{r}
 
@@ -194,7 +193,7 @@ t1_exp = exp(t1_log); t1_exp
 
 t1_exp-5
 
-ITS_diff_log = ITS_0_1
+ITS_diff_log = ITSTest
 
 ## Now add some constant to subtract later
 Suicides_c = 6+ITS_diff_log$Suicides
@@ -209,6 +208,16 @@ ITS_diff_log$Suicides_diff_log =  diff(exp(log(Suicides_c))-6)
 head(ITS_diff_log)
 hist(ITS_diff_log$Suicides_diff_log)
 ```
+Just get mean differences
+```{r}
+compmeans(ITS_diff_log$Suicides_diff_log, ITS_diff_log$Intervention)
+
+ITS_diff_log_3 = subset(ITS_diff_log, Intervention == 3)
+dim(ITS_diff_log_3)
+t.test(ITS_diff_log_3$Suicides_diff_log, mu = .2, alternative = "less")
+```
+
+
 Model: First difference log with constant 
 Checking assumptions 
 
@@ -276,6 +285,9 @@ interaction.plot(x.factor = ITS_ma$Time, trace.factor = ITS_ma$Intervention, res
 mean(Suicides_ma_diff)
 sd(Suicides_ma_diff)
 compmeans(ITS_ma$Suicides_ma, ITS_ma$Intervention) 
+
+compmeans(ITS_ma$Suicides_ma_diff, ITS_ma$Intervention) 
+
 ```
 Model 2: Moving average model
 Check assumptions
@@ -323,6 +335,18 @@ qqnorm(Suicides_ma_diff)
 compmeans(ITS_ma$Suicides_ma_diff, ITS_ma$Intervention) 
 
 ```
+Now compare means for the three versus meds only
+```{r}
+ITS_ma_3 = subset(ITS_ma, Intervention == 3)
+dim(ITS_ma_3)
+
+t.test(ITS_ma$Suicides_ma, mu = 1.92, alternative = "less")
+
+acf(ITS_ma_3$Suicides_ma_diff)
+
+```
+
+
 Model 3: Moving average and differencing
 Checking if data is stationary
 ```{r}
@@ -479,13 +503,18 @@ compmeans(ITSRolling$RollingSumTN, ITSRolling$Intervention)
 (15-23)/23
 (12-23)/23
 ```
-Ok try differences between
+Now try t-test a one-sample t-test bewteen the average of meds only policy 
+See if there were differences between earlier pre and intervention 
+
+
+Testing if post med only is different from meds only
 ```{r}
 
-
+ITSRolling_3 = subset(ITSRolling, Intervention == 3)
+dim(ITSRolling_3)
+t.test(ITSRolling_3$RollingSumTN, mu = 23.25, alternative = "less")
 
 ```
-
 
 
 
