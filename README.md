@@ -8,42 +8,15 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 Library packages
-
-Good time series information: https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc4431.htm
-
-More good time series information: https://otexts.org/fpp2/stationarity.html
-
-Good time series: https://datascienceplus.com/time-series-analysis-in-r-part-1-the-time-series-object/
-
-Good information on time series in R: https://datascienceplus.com/time-series-analysis-in-r-part-2-time-series-transformations/
 ```{r}
-library(lavaan)
 library(psych)
-library(semTools)
 library(dplyr)
-library(ltm)
-library(prettyR)
-library(semTools)
-library(GPArotation)
-library(lavaan)
-library(psych)
-library(semTools)
-library(dplyr)
-library(ltm)
-library(lordif)
-library(Amelia)
-library(plyr)
-library(paran)
 library(caret)
 library(ggplot2)
-library(pracma)
 library(AER)
 library(pscl)
 library(TSA)
 library(TTR)
-library(smooth)
-library(descr)
-library(urca)
 ```
 Load the data
 ```{r}
@@ -53,8 +26,9 @@ Cleaning data
 ```{r}
 ### use the gsub function to break off -02 part, then get rid of -, then you have the year
 ITSTest$MonthNum =  gsub("\\d", "", ITSTest$Month)
+head(ITSTest)
 ### Get rid of -0x part 
-ITSTest$MonthNum = substr(ITSTest$MonthNum, start = 1, stop= 3)
+ITSTest$MonthNum = substr(ITSTest$MonthNum, start = 2, stop= 4)
 
 ITSTest$Year = gsub("\\D", "", ITSTest$Month)
 
@@ -66,31 +40,32 @@ head(ITSTest)
 ITSTest$Time= 1:dim(ITSTest)[1]
 dim(ITSTest)
 head(ITSTest)
-ITSTest
 ITSTest[142:150,]
 
 #Start Jan 2014 intervention starts
-# 1 equals Jan 2014 to Jan 2016 and Jan 2016 is when meds only problem discovered
+# 1 equals Jan 2014 to Dec 2015 and Jan 2016 is when meds only problem discovered
 #2 equals when meds only was being dealt with Jan 2016 to May 2016
-# 3 is May 2016 to March 2018 (end of data)
+# 3 is June 2016 to March 2018 (end of data)
 Intervention= c(rep(0,143), rep(1,167-143), rep(2,172-167), rep(3,194-172))
 length(Intervention)
 
 ITSTest$Intervention = Intervention
 head(ITSTest)
 ITSTest[143:145,]
-ITSTest[144:172,]
 ITSTest[144:168,]
+ITSTest[168:175,]
 dim(ITSTest)
 
 
 ### Changing the month names to numbers so we can plot
 ITSTest$MonthNum = ifelse(ITSTest$MonthNum == "Jan", 1, ifelse(ITSTest$MonthNum == "Feb", 2, ifelse(ITSTest$MonthNum == "Mar", 3, ifelse(ITSTest$MonthNum=="Apr", 4, ifelse(ITSTest$MonthNum == "May", 5, ifelse(ITSTest$MonthNum == "Jun", 6, ifelse(ITSTest$MonthNum == "Jul", 7, ifelse(ITSTest$MonthNum == "Aug", 8, ifelse(ITSTest$MonthNum == "Sep", 9, ifelse(ITSTest$MonthNum == "Oct", 10, ifelse(ITSTest$MonthNum == "Nov", 11, ifelse(ITSTest$MonthNum == "Dec", 12, ITSTest$MonthNum))))))))))))
 
+
 ```
 Just look at descirptives
 ```{r}
 describe(ITSTest)
+ITSTest$MonthNum
 ```
 
 
