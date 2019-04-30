@@ -80,11 +80,16 @@ Differences between 3 and 0 where 3 is when we fixed the problem and 3 and 2 (pr
 
 Previous modeling with the data showed the hurdle with poisson with count and quarter and linear regression with moving average only intervention are the best fits for the data.
 
-
 Model: Count
 ```{r}
 modelH_q= hurdle(Suicides ~ factor(Intervention) + factor(Quarter), dist = "poisson", zero.dist = "binomial", data = ITSTest) 
 summary(modelH_q)
+
+modelH_harm= hurdle(Suicides ~ factor(Intervention) + factor(Quarter) + harmonic(MonthNum, 2, 12), dist = "poisson", zero.dist = "binomial", data = ITSTest) 
+summary(modelH_harm)
+AIC(modelH_q)
+AIC(modelH_harm)
+
 modelH_q_sum = summary(modelH_q)
 round(exp(modelH_q_sum$coefficients$count[,1]),3)
 #### Set up contrasts
@@ -130,14 +135,11 @@ Model 2: Moving average with differencing
 model_lm = lm(Suicides_ma_diff ~ factor(Intervention), data = ITS_ma) 
 summary(model_lm)
 
-model_lm_y = lm(Suicides_ma_diff ~ factor(Intervention) + Year, data = ITS_ma)  
-
 model_lm_q = lm(Suicides_ma_diff ~ factor(Intervention) + factor(Quarter), data = ITS_ma)  
 
-model_lm_q_y = lm(Suicides_ma_diff ~ factor(Intervention) + factor(Quarter) + Year, data = ITS_ma)  
+model_lm_harm = lm(Suicides_ma_diff ~ factor(Intervention) + factor(Quarter) + harmonic(MonthNum, 2, 12), data = ITS_ma)  
 
-anova(model_lm, model_lm_q, model_lm_y, model_lm_q_y)
-summary(model_lm_q_y)
+anova(model_lm, model_lm_q, model_lm_harm)
 
 ## Contrasts
 K = matrix(c(0,0,-1,1), ncol = 4, nrow = 1, byrow = TRUE)
