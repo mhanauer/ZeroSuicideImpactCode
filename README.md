@@ -80,84 +80,35 @@ Previous modeling with the data showed the hurdle with poisson with count and qu
 
 Model: Count
 ```{r}
-modelH_q= hurdle(Suicides ~ factor(Intervention) + factor(Quarter), dist = "poisson", zero.dist = "binomial", data = ITSTest) 
-summary(modelH_q)
+model_p= glm(Suicides ~ factor(Intervention) + factor(Quarter), family = "poisson", data = ITSTest)
+summary(model_p)
 
-modelH_harm= hurdle(Suicides ~ factor(Intervention) + factor(Quarter) + harmonic(MonthNum, 2, 12), dist = "poisson", zero.dist = "binomial", data = ITSTest) 
-summary(modelH_harm)
-AIC(modelH_q)
-AIC(modelH_harm)
+model_p_harm= glm(Suicides ~ factor(Intervention) + factor(Quarter) + harmonic(MonthNum, 2, 12), family = "poisson", data = ITSTest) 
 
-modelH_q_sum = summary(modelH_q)
-round(exp(modelH_q_sum$coefficients$count[,1]),3)
-round(exp(modelH_q_sum$coefficients$count[,2]),3)
 
-#### Set up contrasts
-K = matrix(c(0,0,-1,1,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,-1,1,0,0), ncol = 12, nrow = 2, byrow = TRUE)
-t = glht(modelH_q, linfct = K)
-t_sum = summary(t)
-t_sum
+AIC(model_p)
+BIC(model_p)
+
+AIC(model_p_harm)
+BIC(model_p_harm)
+
+lrtest(model_p, model_p_harm)
 ```
+Final Model
+```{r}
+summary(model_p)
+sum_model_p = summary(model_p)
+exp(sum_model_p$coefficients[,1])
+```
+
+
 Checking assumptions of the model (kpss tests are the same as previous analysis, because they are based on the raw data) 
 ```{r}
 #Checking autocorrelation
-residModelH = residuals(modelH_q)
+residModelH = residuals(model_p)
 plot(ITSTest$Time, residModelH)
 acf(residModelH)
 pacf(residModelH)
-```
-Model 2: Moving average model with difference scores
-Cleaning data
-```{r}
-## Moving average starting at December 2004
-Suicides_ma = SMA(ITSTest$Suicides, n = 12)
-ITSTest$Suicides_ma = Suicides_ma
-ITS_ma = na.omit(ITSTest)
-## Now difference the data, high autocorrelation
-Suicides_ma_diff = diff(ITS_ma$Suicides_ma)
-## Now drop first row so we can rbind 
-dim(ITS_ma)
-ITS_ma = ITS_ma[-1,] 
-dim(ITS_ma)
-## Now put back together the data sets
-ITS_ma$Suicides_ma_diff = Suicides_ma_diff
-dim(ITS_ma)
-head(ITS_ma)
-```
-Model 2: Moving average model
-Get plots and descriptives with new moving average
-```{r}
-describe(ITS_ma)
-compmeans(ITS_ma$Suicides_ma_diff, ITS_ma$Intervention) 
-```
-Model 2: Moving average with differencing
-```{r}
-model_lm = lm(Suicides_ma_diff ~ factor(Intervention), data = ITS_ma) 
-summary(model_lm)
-
-model_lm_q = lm(Suicides_ma_diff ~ factor(Intervention) + factor(Quarter), data = ITS_ma)  
-
-model_lm_harm = lm(Suicides_ma_diff ~ factor(Intervention) + factor(Quarter) + harmonic(MonthNum, 2, 12), data = ITS_ma)  
-
-anova(model_lm, model_lm_q, model_lm_harm)
-
-## Contrasts
-K = matrix(c(0,0,-1,1), ncol = 4, nrow = 1, byrow = TRUE)
-t = glht(model_lm, linfct = K)
-t_sum = summary(t)
-t_sum
-```
-Checking assumptions not great for autocorrelation.  
-```{r}
-#Checking autocorrelation
-residmodel_lm= residuals(model_lm)
-plot(ITS_ma$Time, residmodel_lm)
-acf(residmodel_lm)
-pacf(residmodel_lm)
-
-### compare hurdle to linear
-AIC(modelH_q)
-AIC(model_lm)
 ```
 
 
