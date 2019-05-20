@@ -69,6 +69,9 @@ Just look at descirptives
 describe(ITSTest)
 ITSTest$MonthNum
 compmeans(ITSTest$Suicides, ITSTest$Intervention)
+aggregate(Suicides ~ Intervention, data = ITSTest, sum)
+aggregate(Suicides ~ Intervention, data = ITSTest, range)
+
 ```
 The tests we want to run are:
 Differences between Intervention 1 and Intervention 0 where intervention 1 is when we think things were going well and zero was when we were implementing.
